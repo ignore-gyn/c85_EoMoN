@@ -1,12 +1,16 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
+
 
 /// <summary>
 /// BattleController
+/// ref:RoundStatus.js
 /// </summary>
 public class BattleController : MonoBehaviour {
+	public GameObject prefabPlayer1;
+	
 	void Start () {
-
+		CreateCharacter ();
 	}
 
 	void Update () {
@@ -22,19 +26,22 @@ public class BattleController : MonoBehaviour {
 	}
 	
 	/// <summary>
-	/// ƒQ[ƒ€ŠJnƒLƒƒƒ‰¶¬
+	/// ã‚²ãƒ¼ãƒ é–‹å§‹æ™‚ã‚­ãƒ£ãƒ©ç”Ÿæˆ
 	/// </summary>
-	void createCharacter ()	{
+	void CreateCharacter ()	{
 		int charaInitPosX = 10;
+		GameObject player1;
+
+		// 1Pã‚­ãƒ£ãƒ©
+		player1 = Instantiate(prefabPlayer1,
+		                      new Vector3(-charaInitPosX, 0, 0),
+		                      Quaternion.Euler(0, 90, 0)) as GameObject;
+		player1.transform.parent = transform;
+		player1.tag = "player1";
 		
-		// 1PƒLƒƒƒ‰
-		playerOne = Instantiate(publicData.playerChara[0],
-		                    Vector3(-charaInitPosX, 0, 0),
-		                    Quaternion.Euler(0, 90, 0));
-		playerOne.tag = "playerOne";
 		//playerOneCharaAction = onePlayer.GetComponent(CharaAction);
 		
-		// 2PƒLƒƒƒ‰
+		// 2Pã‚­ãƒ£ãƒ©
 		/*playerTwo = Instantiate(publicData.playerChara[1],
 		                    Vector3(charaInitPosX, 0, 0),
 		                    Quaternion.Euler(0, -90, 0));
