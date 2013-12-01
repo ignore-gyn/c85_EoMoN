@@ -1,63 +1,68 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class CharaInput : MonoBehaviour {
 
-	public int[] inputAccum;		// ボタンが押され続けたフレーム数
-	public Vector3 inputAxis;		// 軸入力
+	private int[] inputAccum;		// ボタンが押され続けたフレーム数
+	private Vector3 inputAxis;		// 軸入力
 
-	int BTN_COUNT;
-	int INPUT_BUFSIZE;
+	private PlayerInput playerInput;
 
-	// Use this for initialization
+	private int btnCount;
+	private int inputBufSize;
+
+	private BattleController battleController;
+	private PlayerInputController playerInputController;
+
 	void Start () {
-		playerInput = GameObject.Find("GameController").GetComponent(PlayerInput);
-		BTN_COUNT = playerInput.Btn.SENTINEL;
-		INPUT_BUFSIZE = playerInput.INPUT_BUFSIZE;
+		battleController = GameObject.Find("Root").GetComponent<BattleController>();
+		playerInputController = GameObject.Find("Root").GetComponent<PlayerInputController>();
+		btnCount = 5;
+		inputBufSize = 16;
 
-		inputAccum = new int[BTN_COUNT];
-		for (int i = 0; i < BTN_COUNT; i++) {
-			inputAccum[i] = 0;
-		}
+		inputAccum = Enumerable.Repeat<int>(0, btnCount).ToArray();
 		inputAxis = Vector3.zero;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
-	void GetInput (int gameFrame)
-	{
-		int btnNum;
-		int bufIndex;
-
-		// --- PlayerInputバッファから該当キャラへの入力バッファを取得 ---
-		if (charaIndex == 0) {
-			playerInputFrame = playerInput.inputTigerFrame;
-			playerInputBtn = playerInput.inputTigerBtn;
-			playerInputAxis = playerInput.inputTigerAxis;
-		} else if (charaIndex == 1) {
-			playerInputFrame = playerInput.inputBunnyFrame;
-			playerInputBtn = playerInput.inputBunnyBtn;
-			playerInputAxis = playerInput.inputBunnyAxis;
+//		if ((charaIndex == 1 && gameObject.tag == "player1") ||
+//		    (charaIndex == 2 && gameObject.tag == "player2")) {
+		if (gameObject.tag == "player1") {
+			playerInput = playerInputController.myInput;
+		} else {
+			playerInput = playerInputController.otherInput;
 		}
-		
-		if (playerInputFrame - gameFrame >= INPUT_BUFSIZE) {
-			Debug.Log("GetInput[Assert]: " + gameObject.tag +
-			          "InputFrame = " + playerInputFrame +
+	}
+
+	/// <summary>
+	/// ボタン入力継続フレーム数の算出と軸入力の設定
+	/// 
+	/// </summary>
+	/// <param name="gameFrame">Game frame.</param>
+	public void SetInput () {
+		/*if (playerInput.inputFrame - gameFrame >= inputBufSize) {
+			Debug.Log("GetInput: " + gameObject.tag +
+			          "InputFrame = " + playerInput.inputFrame +
 			          ", gameFrame = " + gameFrame);
 			return;
-		}
-		
-		// --- ボタン入力継続フレーム数の算出と軸入力の取得 ---
-		bufIndex = playerInputFrame % INPUT_BUFSIZE;
-		for (btnNum = 0; btnNum < BTN_COUNT; btnNum++) {
-			if (playerInputBtn[bufIndex * BTN_COUNT + btnNum]) {
+		}*/
+
+		int bufIndex = battleController.GameFrame % inputBufSize;
+		for (int btnNum = 0; btnNum < btnCount; btnNum++) {
+			if (playerInput.GetInputBtn[bufIndex * btnCount + btnNum]) {
 				inputAccum[btnNum]++;
 			} else {
 				inputAccum[btnNum] = 0;
 			}
 		}
-		inputAxis = playerInputAxis[bufIndex];
+		inputAxis = playerInput.GetInputAxis[bufIndex];
+	}
+
+	public int GetInputBtn(PlayerInput.Btn btn) {
+		return inputAccum[(int)btn];
+	}
+
+	public Vector3 GetInputAxis() {
+		return inputAxis;
+	}
 }
