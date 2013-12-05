@@ -54,7 +54,10 @@ public class CharaACtrl : CharaCtrlBase {
 
 		stateComponents[(int)State.WALK] = gameObject.AddComponent("CharaAStateWalk") as IState;
 		stateComponents[(int)State.DASH] = gameObject.AddComponent("CharaAStateDash") as IState;
+		stateComponents[(int)State.WALK_M] = gameObject.AddComponent("CharaAStateWalkM") as IState;
+		stateComponents[(int)State.DASH_M] = gameObject.AddComponent("CharaAStateDashM") as IState;
 	}
+
 
 	/// <summary>
 	/// コンポーネントのキャッシュ
@@ -62,4 +65,5 @@ public class CharaACtrl : CharaCtrlBase {
 	protected override void CacheComponents () {
 		base.CacheComponents();
 	}
+	
 }

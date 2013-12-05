@@ -11,11 +11,12 @@ public class StateDash : MonoBehaviour, IState {
 	protected int dashCancelTime;
 
 
-	protected int elapsed;
-	protected int dashStartFrame;
+	protected int dashCheckFrame = 0;	// ダッシュ開始時、ダッシュキャンセル時、ダッシュ硬直発生時に更新
 
 	protected delegate void SubState();
 	protected SubState subState;
+
+	private int gameFrame;
 
 	// Cache of Components
 	private CharaCtrlBase charaCtrl;
@@ -24,23 +25,24 @@ public class StateDash : MonoBehaviour, IState {
 		animation["Run"].speed = 1.0f;
 		charaCtrl = GetComponent<CharaCtrlBase>();
 
-		subState = OnStartDash;
+		subState = OnDashStart;
 	}
 
 	public virtual void Do () {
+		gameFrame = charaCtrl.battle.GameFrame;
+
 		subState();
-		elapsed++;
 	}
 	
 
 	/// <summary>
 	/// ダッシュ開始
 	/// </summary>
-	protected virtual void OnStartDash () {
+	protected virtual void OnDashStart () {
 		animation.CrossFade("Run", 0.1f);
 		//audio.PlayOneShot(SEController.dashSE);
 
-		elapsed = 0;
+		dashCheckFrame = gameFrame;
 		subState = OnDash;
 	}
 
@@ -51,7 +53,7 @@ public class StateDash : MonoBehaviour, IState {
 		if (charaCtrl.input.GetInputBtn(PlayerInput.Btn.A) == 1) {
 			// ダッシュキャンセル
 			if (charaCtrl.input.GetInputAxis().magnitude == 0) {
-				elapsed = 0;
+				dashCheckFrame = gameFrame;
 				subState = OnDashCancel;
 				return;
 
@@ -69,8 +71,8 @@ public class StateDash : MonoBehaviour, IState {
 		charaCtrl.MoveOnField(charaCtrl.moveDirection * dashSpeed);
 
 		// ダッシュ硬直判定
-		if (elapsed > dashTime) {
-			elapsed = 0;
+		if (gameFrame - dashCheckFrame > dashTime) {
+			dashCheckFrame = gameFrame;
 			subState = OnDashStun;
 		}
 	}
@@ -79,9 +81,10 @@ public class StateDash : MonoBehaviour, IState {
 	/// ダッシュキャンセル
 	/// </summary>
 	protected virtual void OnDashCancel () {
-		if (elapsed > dashCancelTime) {
-			subState = OnEndDash;
+		if (gameFrame - dashCheckFrame > dashCancelTime) {
+			subState = OnDashEnd;
 		}
+		transform.LookAt(charaCtrl.enemy);
 	}
 
 	/// <summary>
@@ -92,17 +95,18 @@ public class StateDash : MonoBehaviour, IState {
 		animation.CrossFade("Jump", 0.1f);
 		transform.eulerAngles += new Vector3(0, 0.02f, 0);
 
-		if (elapsed > dashStunTime) {
-			subState = OnEndDash;
+		if (gameFrame - dashCheckFrame > dashStunTime) {
+			subState = OnDashEnd;
 		}
 	}
 
 	/// <summary>
 	/// ダッシュ終了（WALKへ）
 	/// </summary>
-	protected virtual void OnEndDash () {
+	protected virtual void OnDashEnd () {
 		animation.CrossFade("Idle", 0.1f);
-		subState = OnDash;
-		charaCtrl.ChangeState(CharaCtrlBase.State.WALK);
+
+		subState = OnDashStart;
+		charaCtrl.ChangeState((int)CharaCtrlBase.State.WALK);
 	}
 }

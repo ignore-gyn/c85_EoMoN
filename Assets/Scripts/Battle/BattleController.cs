@@ -10,6 +10,21 @@ public class BattleController : MonoBehaviour {
 	public GameObject prefabPlayer1;
 	public GameObject prefabPlayer2;
 
+/*	// todo;引数に何を渡すか（呼び出し元からplayer1/2を指定できないか）
+	public int SetBulletLayer (GameObject player) {
+		const int player1BulletLayer = 8;
+		const int player2BulletLayer = 9;
+
+		if (player == player1) {
+			return player1BulletLayer;
+		} else if (player == player2) {
+			return player1BulletLayer;
+		} else {
+			Debug.LogError("Unknown Player Object. Cannot set layer to Bullet Object.");
+		}
+	}
+*/
+
 	private int gameFrame = 0;
 
 	private PlayerInputController playerInputController;
@@ -54,7 +69,6 @@ public class BattleController : MonoBehaviour {
 
 		// MainCamera
 		GameObject mainCamera = GameObject.FindWithTag("MainCamera");
-		mainCamera.transform.parent = player1.transform;
 		mainCamera.AddComponent("CameraController");
 
 		// 2Pキャラ

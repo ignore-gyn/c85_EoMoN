@@ -29,17 +29,23 @@ public class CameraController : MonoBehaviour {
 	private Vector3 targetPosition;
 */
 
-	void Start () {
-		target = transform.parent;
-		// * ToDo: Rotation setting
-		transform.position = new Vector3(target.position.x, height, -distance);
+	private void Start () {
+		target = GameObject.FindWithTag("player1").transform;
+
+		transform.position = new Vector3(target.position.x,
+		                                 height,
+		                                 target.position.z - distance);
+		transform.rotation = target.rotation;
 	}
 
-	void LateUpdate () {
+	private void LateUpdate () {
 		if (!target) {
 			return;
 		}
 
+		transform.position = new Vector3(target.position.x,
+		                                 height,
+		                                 target.position.z - distance);
 		transform.LookAt(target);
 	}
 }

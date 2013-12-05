@@ -64,10 +64,11 @@ public class PlayerInputController : MonoBehaviour {
 		foreach (PlayerInput.Btn btn in settingMyBtn.Keys) {
 			myInput.SetInputBtn(btn, Input.GetKey(settingMyBtn[btn]));
 		}
-		
-		myInput.SetInputAxis(new Vector3(Input.GetAxis(settingMyAxisHorizontal),
-		                                 0,
-		                                 Input.GetAxis(settingMyAxisVertical)));
+
+		float horizontal = Input.GetAxis(settingMyAxisHorizontal);
+		float vertical = Input.GetAxis(settingMyAxisVertical);
+
+		myInput.SetInputAxis(new Vector3(horizontal, 0, vertical));
 
 		/*// Host：ゲストに入力情報を送信
 		if (!isOffline) {
@@ -85,10 +86,11 @@ public class PlayerInputController : MonoBehaviour {
 		foreach (PlayerInput.Btn btn in settingOtherBtn.Keys) {
 			otherInput.SetInputBtn(btn, Input.GetKey(settingOtherBtn[btn]));
 		}
-		
-		otherInput.SetInputAxis(new Vector3(Input.GetAxis(settingOtherAxisHorizontal),
-		                                    0,
-		                                    Input.GetAxis(settingOtherAxisVertical)));
+
+		float horizontal = Input.GetAxis(settingOtherAxisHorizontal);
+		float vertical = Input.GetAxis(settingOtherAxisVertical);
+
+		otherInput.SetInputAxis(new Vector3(horizontal, 0, vertical));
 		
 		/*// Guest：ホストに入力情報を送信
 		if (!isOffline) {

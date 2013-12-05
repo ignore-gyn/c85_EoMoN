@@ -35,7 +35,7 @@ public abstract class CharaCtrlBase : MonoBehaviour {
 		CacheComponents();
 		RegisterState();
 		
-		ChangeState(State.WALK);
+		ChangeState((int)State.WALK);
 	}
 
 	/// <summary>
@@ -70,8 +70,8 @@ public abstract class CharaCtrlBase : MonoBehaviour {
 	/// Stateの変更
 	/// </summary>
 	/// <param name="s">次のState</param>
-	public void ChangeState (State s) {
-		currentState = stateComponents[(int)s];
+	public virtual void ChangeState (int s) {
+		currentState = stateComponents[s];
 		if (currentState == null) {
 			Debug.LogError(s + "script is not registered");
 		}
